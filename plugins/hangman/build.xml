@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="pitiupi.hangman" default="default" basedir=".">
+    <description>Builds, tests, and runs the project pitiupi.hangman.</description>
+    <import file="nbproject/build-impl.xml"/>
+</project>

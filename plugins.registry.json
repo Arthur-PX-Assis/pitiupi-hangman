@@ -20,6 +20,13 @@
       "build": "ant",
       "jar": "dist/pitiupi.ping.jar",
       "menuCategory": "Social"
+    },
+    {
+      "id": "hangman",
+      "dir": "plugins/hangman",
+      "build": "ant",
+      "jar": "dist/pitiupi.hangman.jar",
+      "menuCategory": "Social"
     }
   ]
 }

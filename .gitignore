@@ -1,6 +1,11 @@
+
+# Pitiupi
 /pitiupi/build/
 /pitiupi/dist/
 /pitiupi/nbproject/private/
+/.pitiupi/
+
+# Plugins
 /plugins/chat/build/
 /plugins/chat/dist/
 /plugins/chat/nbproject/private/
@@ -9,4 +14,43 @@
 /plugins/screencast/nbproject/private/
 /plugins/mpchat/out/
 /plugins/mpchat/dist/
-/.pitiupi/
+/plugins/hangman/build/
+/plugins/hangman/dist/
+/plugins/hangman/nbproject/private/
+
+# Java compilado e empacotado
+*.class
+*.jar
+
+# Diretórios de compilação
+build/
+dist/
+target/
+out/
+nbbuild/
+nbdist/
+
+# Configurações pessoais de IDE
+nbproject/private/
+private/
+.nb-gradle/
+.idea/
+*.iml
+.vscode/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.bak
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
