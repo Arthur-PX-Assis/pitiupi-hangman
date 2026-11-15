@@ -22,14 +22,19 @@ import pitiupi.hangman.ui.HangmanPanel;
 import pitiupi.models.Messages.Message;
 import pitiupi.models.Messages.SessionInviteMessage;
 import pitiupi.models.Plugin;
+import pitiupi.control.PeerListener;
+import pitiupi.models.User;
 
+import javax.swing.JOptionPane;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.SwingUtilities;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class HangmanPlugin extends Plugin{
+public class HangmanPlugin extends Plugin implements PeerListener{
 
     private enum Role{
         NONE,
@@ -50,6 +55,8 @@ public class HangmanPlugin extends Plugin{
 
     private Role activeRole = Role.NONE;
     private HangmanGame game;
+
+    private final Map<String, Integer> lastPromptedInviteCount = new ConcurrentHashMap<>();
 
     @Override
     public void createPlugin(
@@ -75,6 +82,7 @@ public class HangmanPlugin extends Plugin{
 
         bindShellWorkspaceContent(panel);
         installPeerActions(workspace.peerActions());
+        connectionManager.addPeerListener(this);
     }
 
     @Override
@@ -466,5 +474,52 @@ public class HangmanPlugin extends Plugin{
     @Override
     public String getIdentifier(){
         return "Pitiupi.Hangman.Example";
+    }
+
+    @Override
+    public void onPeersChanged(List<User> peers){
+        SwingUtilities.invokeLater(() ->{
+            for (User peer : peers){
+                String instanceId = peer.getInstanceId();
+
+                if (instanceId == null || instanceId.isBlank()) continue;
+
+                int pendingCount = connectionManager
+                        .getInviteInboxService()
+                        .getNotificationCount(instanceId);
+
+                int promptedCount = lastPromptedInviteCount
+                        .getOrDefault(instanceId, 0);
+
+                if (pendingCount < promptedCount){
+                    lastPromptedInviteCount.put(instanceId, pendingCount);
+                    promptedCount = pendingCount;
+                }
+
+                if (pendingCount <= promptedCount) continue;
+
+                lastPromptedInviteCount.put(instanceId, pendingCount);
+
+                int option = JOptionPane.showConfirmDialog(
+                        null,
+                        peer.getUserName()
+                                + " enviou um convite de jogo.\n\n"
+                                + "Deseja aceitar?",
+                        "Convite para jogar Forca",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (option == JOptionPane.YES_OPTION){
+                    String acceptedPluginId = connectionManager
+                            .getInviteInboxService()
+                            .acceptFirstInviteFrom(instanceId);
+
+                    if (getIdentifier().equals(acceptedPluginId)) connectionManager.notifyInviteAcceptedForUi(acceptedPluginId);
+                    else if (acceptedPluginId == null) workspace.setStatusMessage( "Não foi possível localizar o convite.");
+                    else workspace.setStatusMessage( "O convite recebido pertence a outro plugin.");
+                }
+            }
+        });
     }
 }
