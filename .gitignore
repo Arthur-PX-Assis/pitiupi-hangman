@@ -20,7 +20,6 @@
 
 # Java compilado e empacotado
 *.class
-*.jar
 
 # Diretórios de compilação
 build/
